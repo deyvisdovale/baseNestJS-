@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  name       String
+  username   String    @unique
+  email      String    @unique
+  password   String
+  isActive   Boolean   @default(true)
+  lastLogin  DateTime?
+  roleId     Int?
+  role       Role?     @relation(fields: [roleId], references: [id])
+  groupId    Int?
+  group      Group?    @relation(fields: [groupId], references: [id])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+}
+
+model Role {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique  
+  users        User[]  
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Group {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique
+  permissions  Permission[]   @relation("GroupPermissions")
+  users        User[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Permission {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  description  String?  
+  groups       Group[]       @relation("GroupPermissions")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model ModuleAccess {
+  id           Int           @id @default(autoincrement())
+  moduleName   String        @unique
+  hasAccess    Boolean  
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
