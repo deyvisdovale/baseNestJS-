@@ -35,7 +35,7 @@ export class PermissionsGuard implements CanActivate {
     console.log(user);
 
     // Always allow Developers to access any route
-    if (user.role == 'Developer') {
+    if (user.role.name == 'Developer') {
       console.log('Developer');
       return true;
     }
@@ -46,7 +46,7 @@ export class PermissionsGuard implements CanActivate {
       throw new ForbiddenException('You do not have access to this module');
     }
     // Management role should check for module access
-    if (user.role == 'Management') {
+    if (user.role.name == 'Management') {
       console.log('Management');
       return true;
     }
