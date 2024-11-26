@@ -49,8 +49,14 @@ model Group {
 
 model Permission {
   id           Int           @id @default(autoincrement())
-  name         String        @unique
-  description  String?  
+  name         String        
+  description  String?
+  code_name    String        @unique
+  moduleAccessId Int?
+  moduleAccess ModuleAccess? @relation(fields: [moduleAccessId], references: [id])
+  parentId     Int?
+  parent       Permission?   @relation("ParentChild", fields: [parentId], references: [id])
+  children     Permission[]  @relation("ParentChild")
   groups       Group[]       @relation("GroupPermissions")
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -60,6 +66,16 @@ model ModuleAccess {
   id           Int           @id @default(autoincrement())
   moduleName   String        @unique
   hasAccess    Boolean  
+  permissions  Permission[]
+  clients      Client[]      @relation("ClientModules")
   createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  updatedAt    DateTime      @updatedAt  
+}
+
+model Client {
+  id           Int           @id @default(autoincrement())
+  name         String
+  modules      ModuleAccess[] @relation("ClientModules")
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 }

@@ -20,7 +20,6 @@ export class UsersService {
   async getAllUsers() {
     return this.prisma.user.findMany({
       include: {
-        role: true,
         group: true,
       },
     });

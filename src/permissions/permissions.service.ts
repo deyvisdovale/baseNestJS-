@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PERMISSIONS } from './seed/permissions.seed';
 import * as bcrypt from 'bcrypt';
+import { MODULE_ACCESS } from 'src/module-access/seed/moduleAccess.seed';
 // import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -9,28 +10,72 @@ export class PermissionsService implements OnModuleInit {
   constructor(private readonly prisma: PrismaService) {}
 
   async onModuleInit() {
+    await this.seedModuleAccess();
     await this.seedPermissions();
     await this.seedMasterGroup();
     await this.seedRoles();
     await this.seedAdminUser();
   }
 
-  // 1. Criar permissões no banco
+  // 1. Criar Acesso de Módulo no banco
+  private async seedModuleAccess() {
+    for (const moduleAccess of MODULE_ACCESS) {
+      const exists = await this.prisma.moduleAccess.findUnique({
+        where: { moduleName: moduleAccess.moduleName },
+      });
+      if (!exists) {
+        await this.prisma.moduleAccess.create({
+          data: moduleAccess,
+        });
+        console.log(`Created moduleAccess: ${moduleAccess.moduleName}`);
+      }
+    }
+  }
+
+  // 2. Criar permissões no banco
   private async seedPermissions() {
     for (const permission of PERMISSIONS) {
       const exists = await this.prisma.permission.findUnique({
-        where: { name: permission.name },
+        where: { code_name: permission.code_name },
       });
+
       if (!exists) {
-        await this.prisma.permission.create({
-          data: permission,
+        // Resolva o módulo de acesso
+        const moduleAccess = await this.prisma.moduleAccess.findUnique({
+          where: { moduleName: permission.moduleAccess },
         });
+
+        if (!moduleAccess) {
+          console.error(
+            `ModuleAccess "${permission.moduleAccess}" not found for permission "${permission.code_name}".`,
+          );
+          continue;
+        }
+
+        // Resolva o parent, se houver
+        const parent = permission.parent
+          ? await this.prisma.permission.findUnique({
+              where: { code_name: permission.parent },
+            })
+          : null;
+
+        // Crie a permissão
+        await this.prisma.permission.create({
+          data: {
+            name: permission.name,
+            description: permission.description,
+            code_name: permission.code_name,
+            parentId: parent?.id || null,
+            moduleAccessId: moduleAccess.id,
+          },
+        });
+
         console.log(`Created permission: ${permission.name}`);
       }
     }
   }
 
-  // 2. Criar grupo "Master" com todas as permissões
+  // 3. Criar grupo "Master" com todas as permissões
   private async seedMasterGroup() {
     const permissions = await this.prisma.permission.findMany();
 
@@ -51,7 +96,7 @@ export class PermissionsService implements OnModuleInit {
     }
   }
 
-  // 3. Criar roles "Developer", "Management" e "User"
+  // 4. Criar roles "Developer", "Management" e "User"
   private async seedRoles() {
     const roles = ['Developer', 'Management', 'User'];
 
@@ -69,7 +114,7 @@ export class PermissionsService implements OnModuleInit {
     }
   }
 
-  // 4. Criar usuário "AzunaCare" com role "Developer" e grupo "Master"
+  // 5. Criar usuário "AzunaCare" com role "Developer" e grupo "Master"
   private async seedAdminUser() {
     const masterGroup = await this.prisma.group.findUnique({
       where: { name: 'Master' },
