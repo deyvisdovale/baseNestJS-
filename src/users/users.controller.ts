@@ -11,13 +11,13 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Post()
-  @Permissions('users_create')
+  @Permissions('config_registerUsers_users_create')
   async create(@Body() dto: CreateUserDto) {
     return this.userService.createUser(dto);
   }
 
   @Get()
-  @Permissions('users_getAll')
+  @Permissions('config_registerUsers_users_view')
   async getAll() {
     return this.userService.getAllUsers();
   }

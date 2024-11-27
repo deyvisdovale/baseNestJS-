@@ -44,6 +44,8 @@ export const PERMISSIONS = [
     parent: 'config_registerUsers_users',
     moduleAccess: 'ConfigModule',
   },
+
+  // Cadastro de Grupo de Usuários (Filho de Configurações)
   {
     name: 'Grupo de Usuário',
     code_name: 'config_registerUsers_group',
