@@ -3,9 +3,10 @@ import { GroupService } from './group.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GroupController } from './group.controller';
 import { PermissionsModule } from 'src/permissions/permissions.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [PermissionsModule],
+  imports: [PermissionsModule, UsersModule],
   controllers: [GroupController],
   providers: [GroupService, PrismaService],
   exports: [GroupService],

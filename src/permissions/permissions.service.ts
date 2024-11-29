@@ -20,58 +20,53 @@ export class PermissionsService implements OnModuleInit {
   // 1. Criar Acesso de Módulo no banco
   private async seedModuleAccess() {
     for (const moduleAccess of MODULE_ACCESS) {
-      const exists = await this.prisma.moduleAccess.findUnique({
+      await this.prisma.moduleAccess.upsert({
         where: { moduleName: moduleAccess.moduleName },
+        update: moduleAccess, // Atualiza os dados existentes
+        create: moduleAccess, // Cria um novo registro se não existir
       });
-      if (!exists) {
-        await this.prisma.moduleAccess.create({
-          data: moduleAccess,
-        });
-        console.log(`Created moduleAccess: ${moduleAccess.moduleName}`);
-      }
+      console.log(`Seeded moduleAccess: ${moduleAccess.moduleName}`);
     }
   }
 
   // 2. Criar permissões no banco
   private async seedPermissions() {
     for (const permission of PERMISSIONS) {
-      const exists = await this.prisma.permission.findUnique({
-        where: { code_name: permission.code_name },
+      const moduleAccess = await this.prisma.moduleAccess.findUnique({
+        where: { moduleName: permission.moduleAccess },
       });
 
-      if (!exists) {
-        // Resolva o módulo de acesso
-        const moduleAccess = await this.prisma.moduleAccess.findUnique({
-          where: { moduleName: permission.moduleAccess },
-        });
-
-        if (!moduleAccess) {
-          console.error(
-            `ModuleAccess "${permission.moduleAccess}" not found for permission "${permission.code_name}".`,
-          );
-          continue;
-        }
-
-        // Resolva o parent, se houver
-        const parent = permission.parent
-          ? await this.prisma.permission.findUnique({
-              where: { code_name: permission.parent },
-            })
-          : null;
-
-        // Crie a permissão
-        await this.prisma.permission.create({
-          data: {
-            name: permission.name,
-            description: permission.description,
-            code_name: permission.code_name,
-            parentId: parent?.id || null,
-            moduleAccessId: moduleAccess.id,
-          },
-        });
-
-        console.log(`Created permission: ${permission.name}`);
+      if (!moduleAccess) {
+        console.error(
+          `ModuleAccess "${permission.moduleAccess}" not found for permission "${permission.code_name}".`,
+        );
+        continue;
       }
+
+      const parent = permission.parent
+        ? await this.prisma.permission.findUnique({
+            where: { code_name: permission.parent },
+          })
+        : null;
+
+      await this.prisma.permission.upsert({
+        where: { code_name: permission.code_name },
+        update: {
+          name: permission.name,
+          description: permission.description,
+          parentId: parent?.id || null,
+          moduleAccessId: moduleAccess.id,
+        },
+        create: {
+          name: permission.name,
+          description: permission.description,
+          code_name: permission.code_name,
+          parentId: parent?.id || null,
+          moduleAccessId: moduleAccess.id,
+        },
+      });
+
+      console.log(`Seeded permission: ${permission.name}`);
     }
   }
 
@@ -79,21 +74,22 @@ export class PermissionsService implements OnModuleInit {
   private async seedMasterGroup() {
     const permissions = await this.prisma.permission.findMany();
 
-    const masterGroupExists = await this.prisma.group.findUnique({
+    await this.prisma.group.upsert({
       where: { name: 'Master' },
+      update: {
+        permissions: {
+          set: permissions.map((permission) => ({ id: permission.id })), // Atualiza o relacionamento
+        },
+      },
+      create: {
+        name: 'Master',
+        permissions: {
+          connect: permissions.map((permission) => ({ id: permission.id })),
+        },
+      },
     });
 
-    if (!masterGroupExists) {
-      await this.prisma.group.create({
-        data: {
-          name: 'Master',
-          permissions: {
-            connect: permissions.map((permission) => ({ id: permission.id })),
-          },
-        },
-      });
-      console.log('Created Master group with all permissions');
-    }
+    console.log('Seeded Master group with all permissions');
   }
 
   // 4. Criar roles "Developer", "Management" e "User"
@@ -101,16 +97,12 @@ export class PermissionsService implements OnModuleInit {
     const roles = ['Developer', 'Management', 'User'];
 
     for (const role of roles) {
-      const roleExists = await this.prisma.role.findUnique({
+      await this.prisma.role.upsert({
         where: { name: role },
+        update: {}, // Se necessário, inclua campos para atualização
+        create: { name: role },
       });
-
-      if (!roleExists) {
-        await this.prisma.role.create({
-          data: { name: role },
-        });
-        console.log(`Created role: ${role}`);
-      }
+      console.log(`Seeded role: ${role}`);
     }
   }
 
@@ -129,24 +121,28 @@ export class PermissionsService implements OnModuleInit {
       return;
     }
 
-    const userExists = await this.prisma.user.findUnique({
+    const hashedPassword = await bcrypt.hash('12345678', 10);
+
+    await this.prisma.user.upsert({
       where: { username: 'AzunaCare' },
+      update: {
+        name: 'Azuna LTDA',
+        email: 'azunacare@example.com',
+        password: hashedPassword,
+        roleId: developerRole.id,
+        groupId: masterGroup.id,
+      },
+      create: {
+        name: 'Azuna LTDA',
+        username: 'AzunaCare',
+        email: 'azunacare@example.com',
+        password: hashedPassword,
+        roleId: developerRole.id,
+        groupId: masterGroup.id,
+      },
     });
 
-    if (!userExists) {
-      const hashedPassword = await bcrypt.hash('12345678', 10);
-      await this.prisma.user.create({
-        data: {
-          name: 'Azuna LTDA',
-          username: 'AzunaCare',
-          email: 'azunacare@example.com',
-          password: hashedPassword,
-          roleId: developerRole.id,
-          groupId: masterGroup.id,
-        },
-      });
-      console.log('Created admin user: AzunaCare');
-    }
+    console.log('Seeded admin user: AzunaCare');
   }
 
   /**

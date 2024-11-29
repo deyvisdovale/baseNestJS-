@@ -40,4 +40,29 @@ export class UsersService {
       },
     });
   }
+
+  async getPermissions(userId: number) {
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId },
+      include: {
+        role: true,
+        group: {
+          include: {
+            permissions: {
+              include: {
+                moduleAccess: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (user) {
+      const userWithoutPassword = { ...user, password: '' };
+      return userWithoutPassword;
+    }
+
+    return null;
+  }
 }
