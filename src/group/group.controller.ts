@@ -23,7 +23,10 @@ export class GroupController {
   }
 
   @Get('/usersGroups')
-  @Permissions('view_groups')
+  @Permissions(
+    'config_registerUsers_users_create',
+    'config_registerUsers_users_update',
+  )
   async getAllSelectorsGroups() {
     return this.groupService.getAllSelectorGroups();
   }
