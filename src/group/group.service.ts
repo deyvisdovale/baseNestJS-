@@ -24,4 +24,13 @@ export class GroupService {
       },
     });
   }
+
+  async getAllSelectorGroups() {
+    return this.prisma.group.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  }
 }

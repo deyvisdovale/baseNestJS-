@@ -21,4 +21,10 @@ export class GroupController {
   async getAll() {
     return this.groupService.getAllGroups();
   }
+
+  @Get('/usersGroups')
+  @Permissions('view_groups')
+  async getAllSelectorsGroups() {
+    return this.groupService.getAllSelectorGroups();
+  }
 }
