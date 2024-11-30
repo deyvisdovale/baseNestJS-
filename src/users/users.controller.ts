@@ -6,8 +6,9 @@ import {
   UseGuards,
   HttpStatus,
   HttpCode,
+  Put,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/users.dto';
+import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { PermissionsGuard } from 'src/permissions/guards/permissions.guard';
@@ -30,6 +31,12 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async getAll() {
     return this.userService.getAllUsers();
+  }
+  @Put()
+  @Permissions('config_registerUsers_users_update')
+  @HttpCode(HttpStatus.OK)
+  async update(@Body() dto: UpdateUserDto) {
+    return this.userService.updateUser(dto);
   }
 
   @Post('/permissions')

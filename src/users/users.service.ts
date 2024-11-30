@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserDto } from './dto/users.dto';
+import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -27,6 +27,27 @@ export class UsersService {
         role: {
           connect: {
             id: 3,
+          },
+        },
+      },
+    });
+  }
+
+  async updateUser(dto: UpdateUserDto) {
+    // Remove o campo password do DTO
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, id, ...updateData } = dto;
+
+    // Lógica para atualizar o restante dos campos
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        ...updateData,
+        birthDate: new Date(updateData.birthDate),
+        group: {
+          connect: {
+            id: Number(updateData.group), // Associa o grupo pelo ID, se fornecido
           },
         },
       },
