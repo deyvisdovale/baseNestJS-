@@ -29,7 +29,7 @@ model User {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   deletedAt  DateTime?
-  inReset Boolean @default(false)
+  inReset Boolean @default(true)
 }
 
 model Role {
