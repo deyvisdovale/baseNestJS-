@@ -19,6 +19,7 @@ model User {
   username   String    @unique
   email      String    @unique
   password   String
+  birthDate  DateTime  @default(now())
   isActive   Boolean   @default(true)
   lastLogin  DateTime?
   roleId     Int?
