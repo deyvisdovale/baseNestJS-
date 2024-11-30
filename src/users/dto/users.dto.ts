@@ -3,6 +3,7 @@ export class CreateUserDto {
   username: string;
   email: string;
   password: string;
-  roleId?: number;
-  groupId?: number;
+  group: string;
+  birthDate: string;
+  isActive: boolean;
 }

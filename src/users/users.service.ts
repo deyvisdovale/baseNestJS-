@@ -9,10 +9,26 @@ export class UsersService {
 
   async createUser(dto: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
+    console.log(dto);
+
     return this.prisma.user.create({
       data: {
-        ...dto,
+        name: dto.name,
+        username: dto.username,
+        email: dto.email,
         password: hashedPassword,
+        isActive: dto.isActive,
+        birthDate: new Date(dto.birthDate), // Converte para Date, caso necessário
+        group: {
+          connect: {
+            id: Number(dto.group), // Associa o grupo pelo ID
+          },
+        },
+        role: {
+          connect: {
+            id: 3,
+          },
+        },
       },
     });
   }
