@@ -65,7 +65,9 @@ export class PermissionsGuard implements CanActivate {
     // Users should check for specific permissions
     if (requiredPermissions) {
       const hasPermissions = userFind.group?.permissions.some((permission) =>
-        requiredPermissions.includes(permission.code_name),
+        requiredPermissions.some(
+          (reqPermission) => permission.code_name === reqPermission,
+        ),
       );
 
       console.log(hasPermissions);
