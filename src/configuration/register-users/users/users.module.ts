@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { PermissionsModule } from 'src/permissions/permissions.module';
+import { PermissionsModule } from 'src/configuration/register-users/permissions/permissions.module';
 
 @Module({
   controllers: [UsersController],

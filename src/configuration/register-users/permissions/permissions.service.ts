@@ -2,7 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PERMISSIONS } from './seed/permissions.seed';
 import * as bcrypt from 'bcrypt';
-import { MODULE_ACCESS } from 'src/module-access/seed/moduleAccess.seed';
+import { MODULE_ACCESS } from 'src/configuration/register-users/module-access/seed/moduleAccess.seed';
 // import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()

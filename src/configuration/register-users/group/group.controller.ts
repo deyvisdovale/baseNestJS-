@@ -1,8 +1,8 @@
 import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
 import { GroupService } from './group.service';
 import { CreateGroupDto } from './dto/group.dto';
-import { PermissionsGuard } from 'src/permissions/guards/permissions.guard';
-import { Permissions } from 'src/permissions/decorators/permissions.decorator';
+import { PermissionsGuard } from 'src/configuration/register-users/permissions/guards/permissions.guard';
+import { Permissions } from 'src/configuration/register-users/permissions/decorators/permissions.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @Controller('groups')

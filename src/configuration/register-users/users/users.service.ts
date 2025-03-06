@@ -95,11 +95,6 @@ export class UsersService {
       },
     });
 
-    if (user) {
-      const userWithoutPassword = { ...user, password: '' };
-      return userWithoutPassword;
-    }
-
-    return null;
+    return user ? { ...user, password: '' } : null;
   }
 }

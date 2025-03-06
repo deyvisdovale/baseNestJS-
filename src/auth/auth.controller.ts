@@ -10,9 +10,9 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from './guards/auth.guard';
 import { AuthService } from './auth.service';
-import { PermissionsGuard } from 'src/permissions/guards/permissions.guard';
-import { Permissions } from 'src/permissions/decorators/permissions.decorator';
-import { Module_Access } from 'src/module-access/decorators/module-access.decorator';
+import { PermissionsGuard } from 'src/configuration/register-users/permissions/guards/permissions.guard';
+import { Permissions } from 'src/configuration/register-users/permissions/decorators/permissions.decorator';
+import { Module_Access } from 'src/configuration/register-users/module-access/decorators/module-access.decorator';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}

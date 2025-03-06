@@ -8,7 +8,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { PermissionsService } from '../permissions.service';
 import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
-import { MODULE_ACCESS_KEY } from 'src/module-access/decorators/module-access.decorator';
+import { MODULE_ACCESS_KEY } from 'src/configuration/register-users/module-access/decorators/module-access.decorator';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
