@@ -1,12 +1,12 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
   Get,
-  UseGuards,
-  HttpStatus,
   HttpCode,
+  HttpStatus,
+  Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import {
   CreateUserDto,
@@ -36,12 +36,14 @@ export class UsersController {
   async getAll() {
     return this.userService.getAllUsers();
   }
+
   @Put()
   @Permissions('config_registerUsers_users_update')
   @HttpCode(HttpStatus.OK)
   async update(@Body() dto: UpdateUserDto) {
     return this.userService.updateUser(dto);
   }
+
   @Put('/reset')
   @Permissions('config_registerUsers_users_update')
   @HttpCode(HttpStatus.OK)

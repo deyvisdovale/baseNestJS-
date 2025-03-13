@@ -25,7 +25,7 @@ export class UsersService {
     }
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    return await this.prisma.user.create({
+    return this.prisma.user.create({
       data: {
         name: dto.name,
         username: dto.username,
@@ -65,7 +65,7 @@ export class UsersService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, id, ...updateData } = dto;
 
-    return await this.prisma.user.update({
+    return this.prisma.user.update({
       where: { id },
       data: {
         ...updateData,
@@ -80,7 +80,7 @@ export class UsersService {
   }
 
   async getAllUsers() {
-    return await this.prisma.user.findMany({
+    return this.prisma.user.findMany({
       include: {
         group: true,
       },
@@ -88,7 +88,7 @@ export class UsersService {
   }
 
   async findOne(username: string) {
-    return await this.prisma.user.findFirst({
+    return this.prisma.user.findFirst({
       where: {
         username: username,
       },
@@ -122,6 +122,7 @@ export class UsersService {
 
     return user ? { ...user, password: '' } : null;
   }
+
   async resetPassUser(dto: UpdateResetPassUserDto) {
     const existingUser = await this.prisma.user.findFirst({
       where: {
@@ -135,13 +136,14 @@ export class UsersService {
         HttpStatus.NOT_FOUND,
       );
     }
-    console.log(dto.password);
+
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    return await this.prisma.user.update({
+    return this.prisma.user.update({
       where: { id: dto.id },
       data: {
         password: hashedPassword,
+        inReset: true,
       },
     });
   }
