@@ -1,56 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Client` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Group` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `ModuleAccess` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Permission` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Role` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "Permission" DROP CONSTRAINT "Permission_moduleAccessId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Permission" DROP CONSTRAINT "Permission_parentId_fkey";
-
--- DropForeignKey
-ALTER TABLE "User" DROP CONSTRAINT "User_groupId_fkey";
-
--- DropForeignKey
-ALTER TABLE "User" DROP CONSTRAINT "User_roleId_fkey";
-
--- DropForeignKey
-ALTER TABLE "_ClientModules" DROP CONSTRAINT "_ClientModules_A_fkey";
-
--- DropForeignKey
-ALTER TABLE "_ClientModules" DROP CONSTRAINT "_ClientModules_B_fkey";
-
--- DropForeignKey
-ALTER TABLE "_GroupPermissions" DROP CONSTRAINT "_GroupPermissions_A_fkey";
-
--- DropForeignKey
-ALTER TABLE "_GroupPermissions" DROP CONSTRAINT "_GroupPermissions_B_fkey";
-
--- DropTable
-DROP TABLE "Client";
-
--- DropTable
-DROP TABLE "Group";
-
--- DropTable
-DROP TABLE "ModuleAccess";
-
--- DropTable
-DROP TABLE "Permission";
-
--- DropTable
-DROP TABLE "Role";
-
--- DropTable
-DROP TABLE "User";
-
 -- CreateTable
 CREATE TABLE "config_user" (
     "id" SERIAL NOT NULL,
@@ -126,6 +73,22 @@ CREATE TABLE "config_client" (
     CONSTRAINT "config_client_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "_GroupPermissions" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL,
+
+    CONSTRAINT "_GroupPermissions_AB_pkey" PRIMARY KEY ("A","B")
+);
+
+-- CreateTable
+CREATE TABLE "_ClientModules" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL,
+
+    CONSTRAINT "_ClientModules_AB_pkey" PRIMARY KEY ("A","B")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "config_user_username_key" ON "config_user"("username");
 
@@ -143,6 +106,12 @@ CREATE UNIQUE INDEX "config_permission_code_name_key" ON "config_permission"("co
 
 -- CreateIndex
 CREATE UNIQUE INDEX "config_module_access_moduleName_key" ON "config_module_access"("moduleName");
+
+-- CreateIndex
+CREATE INDEX "_GroupPermissions_B_index" ON "_GroupPermissions"("B");
+
+-- CreateIndex
+CREATE INDEX "_ClientModules_B_index" ON "_ClientModules"("B");
 
 -- AddForeignKey
 ALTER TABLE "config_user" ADD CONSTRAINT "config_user_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "config_role"("id") ON DELETE SET NULL ON UPDATE CASCADE;
