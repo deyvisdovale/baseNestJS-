@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { MODULE_ACCESS } from 'src/configuration/register-users/module-access/seed/moduleAccess.seed';
 import { Permission } from '@prisma/client';
 import { PermissionTree } from './dto/permissions.dto';
+
 // import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -126,25 +127,25 @@ export class PermissionsService implements OnModuleInit {
     const hashedPassword = await bcrypt.hash('12345678', 10);
 
     await this.prisma.user.upsert({
-      where: { username: 'udi' },
+      where: { username: 'azuna' },
       update: {
-        name: 'UDI 24 Horas LTDA',
-        email: 'udi24horas@gmail.com',
+        name: 'Azuna System',
+        email: 'azunasystem@gmail.com',
         password: hashedPassword,
         roleId: developerRole.id,
         groupId: masterGroup.id,
       },
       create: {
-        name: 'UDI 24 Horas LTDA',
-        username: 'udi',
-        email: 'udi24horas@gmail.com',
+        name: 'Azuna System',
+        username: 'azuna',
+        email: 'azunasystem@gmail.com',
         password: hashedPassword,
         roleId: developerRole.id,
         groupId: masterGroup.id,
       },
     });
 
-    console.log('Seeded admin user: UDI');
+    console.log('Seeded admin user: Azuna');
   }
 
   /**
@@ -182,11 +183,9 @@ export class PermissionsService implements OnModuleInit {
     }
 
     // Verifica se todas as permissões requeridas estão nas permissões do usuário
-    const hasAllPermissions = requiredPermissions.every((permission) =>
+    return requiredPermissions.every((permission) =>
       userPermissions.includes(permission),
     );
-
-    return hasAllPermissions;
   }
 
   async getAllPermissions(): Promise<PermissionTree[]> {
