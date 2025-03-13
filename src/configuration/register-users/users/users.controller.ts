@@ -51,6 +51,8 @@ export class UsersController {
     return this.userService.resetPassUser(dto);
   }
 
+  // TODO: Make the Controller and Service of ChangePass
+
   @Post('/permissions')
   @HttpCode(HttpStatus.OK)
   async getPermissions(@Body('userId') userId: number) {

@@ -20,7 +20,7 @@ describe('AuthController', () => {
         {
           provide: AuthService,
           useValue: {
-            signIn: jest.fn().mockResolvedValue({ access_token: 'mockToken' }), // Mock do método signIn
+            signIn: jest.fn().mockResolvedValue({ access_token: 'mockToken' }), // Mock da função signIn
           },
         },
         {
@@ -58,7 +58,7 @@ describe('AuthController', () => {
     it('should return an access token when credentials are valid', async () => {
       const signInDto = { username: 'testuser', password: 'testpassword' };
 
-      // Chama o método signIn do controller
+      // Chama a função signIn do controller
       const result = await authController.signIn(signInDto);
 
       // Verifica se o resultado é o esperado
@@ -73,7 +73,7 @@ describe('AuthController', () => {
         .spyOn(authService, 'signIn')
         .mockRejectedValue(new UnauthorizedException('Invalid credentials'));
 
-      // Verifica se o método signIn do controller lança um erro
+      // Verifica se a função signIn do controller lança um erro
       await expect(authController.signIn(signInDto)).rejects.toThrow(
         'Invalid credentials',
       );
