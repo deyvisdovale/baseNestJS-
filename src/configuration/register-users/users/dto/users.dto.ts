@@ -22,4 +22,5 @@ export class UpdateUserDto {
 export class UpdateResetPassUserDto {
   id: number;
   password: string;
+  inReset: boolean;
 }

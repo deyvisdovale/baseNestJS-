@@ -1,8 +1,8 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -21,7 +21,6 @@ export class PermissionsGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('PermissionsGuard');
     const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
       PERMISSIONS_KEY,
       [context.getHandler(), context.getClass()],
@@ -35,9 +34,6 @@ export class PermissionsGuard implements CanActivate {
     const request: AuthenticatedRequest = context.switchToHttp().getRequest();
     const user = request.user;
 
-    console.log('### User Permissions ###');
-    console.log(user);
-
     const userFind = await this.usersService.getPermissions(user.sub);
     if (!userFind) {
       throw new NotFoundException('Not Found user in permissions.');
@@ -45,7 +41,6 @@ export class PermissionsGuard implements CanActivate {
 
     // Always allow Developers to access any route
     if (userFind.role?.name == 'Developer') {
-      console.log('Developer');
       return true;
     }
 
@@ -56,12 +51,8 @@ export class PermissionsGuard implements CanActivate {
     }
     // Management role should check for module access
     if (userFind.role?.name == 'Management') {
-      console.log('Management');
       return true;
     }
-
-    console.log(requiredPermissions);
-    console.log('Antes do IF');
 
     // Users should check for specific permissions
     if (requiredPermissions) {

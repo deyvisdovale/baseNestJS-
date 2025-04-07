@@ -143,7 +143,7 @@ export class UsersService {
       where: { id: dto.id },
       data: {
         password: hashedPassword,
-        inReset: true,
+        inReset: dto.inReset,
       },
     });
   }
